@@ -239,9 +239,11 @@
             let table_body = $("tbody#table-body");
             // append rows
             //<a href="<%= urlPrefix %>/cheat_detection_pair/">cheat_detection_pair</a>
-            for (let i=0; i<5; i++) {
+            const numRows = 10
+            console.log("Number of rows in the CSV file: " + numRows);
+            for (let i=0; i<numRows; i++) {
               console.log("<%= urlPrefix %>")
-              console.log("hello")
+              console.log("hello1")
               let tr = $("<tr role=\"row\" class=\"even\" data-href=\"" +window.location.href+ "_pair?data1=" + data[i].student1 + "&data2=" + data[i].student2 + "\"></tr>");  // localhost:3000/cheat_detection_pair             localhost:3000/pl/.....
               tr.append($("<td>"+(i+1)+"</td>"));
               tr.append($("<td>"+"100%"+"</td>")); 
