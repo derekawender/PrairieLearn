@@ -62,3 +62,8 @@ FROM
 WHERE
     ai.assessment_id = $assessment_id
     AND NOT users_is_instructor_in_course_instance(e.user_id, e.course_instance_id);
+
+-- BLOCK get_student_pair
+SELECT *
+FROM pairwise_rules
+WHERE student1 = $1 AND student2 = $2;

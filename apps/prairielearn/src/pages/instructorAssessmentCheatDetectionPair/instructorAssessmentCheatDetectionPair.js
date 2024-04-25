@@ -115,7 +115,17 @@ router.get('/', function (req, res, next) {
   );
 
 });
+router.get('/:param1/:param2', (req, res) => {
+  const s1 = req.params.param1;
+  const s2 = req.params.param2
+  sqldb.queryOneRow(sql.get_student_pair, [s1, s2], function (err, result) {
+    if (err) return;
+    var obj = result.rows[0]; // guaranteed to exist and no more
+    console.log(obj);
+  });
+  res.render('instructorAssessmentCheatDetectionPair/instructorAssessmentCheatDetectionPair', res.locals);
 
+})
 router.get('/:filename', function (req, res, next) {
   setFilenames(res.locals);
   if (req.params.filename === res.locals.scoreStatsCsvFilename) {

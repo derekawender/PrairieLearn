@@ -53,7 +53,8 @@ router.post('/', upload.single('file'), (req, res) => {
       return res.status(500).send('Error parsing CSV');
     }
     // Iterate over each row of CSV data
-    records.forEach(row => {
+    const dataRows = records.slice(1);
+    dataRows.forEach(row => {
       // Extract values from the row
       const [student1, student2, rule1_violations, rule1_prob, rule1_percentile, 
             rule2_violations, rule2_prob, rule2_percentile,

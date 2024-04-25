@@ -41,6 +41,14 @@
           }, {});
           var cardHeader = document.getElementById('cardHeader');
           cardHeader.innerText = 'Detailed Report for Pair (' + queryParams.data1 + ', ' + queryParams.data2 + ')';
+          $.ajax({
+                  url: window.location.href + '/' + queryParams.data1 + '/' + queryParams.data2,
+                  method: "GET",
+                  error: function(error) {
+                    console.error("Can't query database with this error: " + error);
+                  }
+                });
+
         }, {});
       $(function () {
           $('[data-toggle="popover"]').popover({sanitize: false})
