@@ -12,7 +12,9 @@ const debug = require('debug')('prairielearn:' + path.basename(__filename, '.js'
 
 const sanitizeName = require('../../lib/sanitize-name');
 const sqldb = require('@prairielearn/postgres');
-
+const multer = require('multer');
+const { filesize } = require('filesize');
+const { config, loadConfig, setLocalsFromConfig } = require('../../lib/config');
 
 const sql = sqldb.loadSqlEquiv(__filename);
 
@@ -25,11 +27,29 @@ const setFilenames = function (locals) {
   );
   locals.cheatDetectionCsvFilename = prefix + 'cheat_detection.csv';
 };
-
 // var psersonalAccessToken = "234c3c9d-a00a-4184-b5be-ac2abd6eed56 ";
 const personalAccessToken = 'b400e6fc-b02a-46f0-b74d-f61e7e3ddc95';
 console.log("backend received PAT: ", personalAccessToken);
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fieldSize: config.fileUploadMaxBytes,
+    fileSize: config.fileUploadMaxBytes,
+    parts: config.fileUploadMaxParts,
+  },
+});
+config.fileUploadMaxBytesFormatted = filesize(config.fileUploadMaxBytes, {
+  base: 10,
+  round: 0,
+});
+
+router.post('/', upload.single('file'), (req, res) => {
+  // Access the uploaded file via req.file
+  console.log(req.file); // This will log information about the uploaded file
+  // Process the uploaded file as needed
+  
+});
 router.get('/', function (req, res, next) {
   debug('GET /');
   setFilenames(res.locals);
@@ -150,6 +170,7 @@ router.get(
       });
 
       res.attachment(req.params.filename);
+      console.log("getting to this router");
       await pipeline(cursor.stream(100), stringifier, res);
     } else {
       next(error.make(404, 'Unknown filename: ' + req.params.filename));

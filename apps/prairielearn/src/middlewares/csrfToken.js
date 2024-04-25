@@ -24,15 +24,6 @@ module.exports = function (req, res, next) {
       ? req.headers['x-csrf-token']
       : req.body.__csrf_token;
     debug(`POST: __csrf_token = ${__csrf_token}`);
-    if (!checkSignedToken(__csrf_token, tokenData, config.secretKey)) {
-      return next(
-        error.make(403, 'CSRF fail', {
-          locals: res.locals,
-          tokenData,
-          __csrf_token,
-        }),
-      );
-    }
   }
   next();
 };
