@@ -15,7 +15,7 @@ const sqldb = require('@prairielearn/postgres');
 const multer = require('multer');
 const { filesize } = require('filesize');
 const { config, loadConfig, setLocalsFromConfig } = require('../../lib/config');
-
+const { parse } = require('csv-parse');
 const sql = sqldb.loadSqlEquiv(__filename);
 
 const setFilenames = function (locals) {
@@ -45,10 +45,42 @@ config.fileUploadMaxBytesFormatted = filesize(config.fileUploadMaxBytes, {
 });
 
 router.post('/', upload.single('file'), (req, res) => {
-  // Access the uploaded file via req.file
-  console.log(req.file); // This will log information about the uploaded file
-  // Process the uploaded file as needed
-  
+  // Parse CSV data from req.file.buffer
+  parse(req.file.buffer, {}, (err, records) => {
+    if (err) {
+      // Handle parsing error
+      console.error('Error parsing CSV:', err);
+      return res.status(500).send('Error parsing CSV');
+    }
+    // Iterate over each row of CSV data
+    records.forEach(row => {
+      // Extract values from the row
+      const [student1, student2, rule1_violations, rule1_prob, rule1_percentile, 
+            rule2_violations, rule2_prob, rule2_percentile,
+            rule3_violations, rule3_prob, rule3_percentile,
+            rule4_violations, rule4_prob, rule4_percentile,
+            overall_prob] = row;
+
+      // Execute the SQL query with extracted values
+      const params = [
+        student1, student2,
+        rule1_violations, rule1_prob, rule1_percentile,
+        rule2_violations, rule2_prob, rule2_percentile,
+        rule3_violations, rule3_prob, rule3_percentile,
+        rule4_violations, rule4_prob, rule4_percentile,
+        overall_prob
+      ];
+
+      sqldb.query(sql.insert_from_csv, params, (err, result) => {
+        if (err) {
+          console.error('Error inserting into database:', err);
+          return res.status(500).send('Error inserting into database');
+        }
+      });
+    });
+    // Send success response
+    res.render('instructorAssessmentCheatDetection/instructorAssessmentCheatDetection', res.locals);
+  });
 });
 router.get('/', function (req, res, next) {
   debug('GET /');

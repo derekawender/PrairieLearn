@@ -62,3 +62,18 @@ FROM
 WHERE
     ai.assessment_id = $assessment_id
     AND NOT users_is_instructor_in_course_instance(e.user_id, e.course_instance_id);
+-- BLOCK insert_from_csv
+INSERT INTO pairwise_rules (
+            student1, student2,
+            rule1_violations, rule1_prob, rule1_percentile,
+            rule2_violations, rule2_prob, rule2_percentile,
+            rule3_violations, rule3_prob, rule3_percentile,
+            rule4_violations, rule4_prob, rule4_percentile,
+            overall_prob
+        ) VALUES (
+            $1, $2, $3,
+            $4, $5, $6,
+            $7, $8, $9,
+            $10, $11, $12,
+            $13, $14, $15
+        );
